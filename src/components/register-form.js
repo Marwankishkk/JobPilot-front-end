@@ -1,20 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiUrl } from "@/lib/api-base";
+import { useCurrentUser } from "@/lib/current-user-context";
+
+function formatApiError(data) {
+  if (!data || typeof data !== "object") return null;
+  if (typeof data.detail === "string") return data.detail;
+  if (Array.isArray(data.detail)) {
+    return data.detail.map((d) => (typeof d === "object" && d?.msg ? d.msg : String(d))).join(" ");
+  }
+  if (typeof data.error === "string") return data.error;
+  if (typeof data.message === "string") return data.message;
+  return null;
+}
 
 const inputClass =
   "mt-1 w-full rounded-md border border-slate-300 bg-white p-2.5 text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30";
 
 export default function RegisterForm() {
   const router = useRouter();
+  const { user, loading: authLoading } = useCurrentUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const passwordsMatch = password === confirmPassword;
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.replace("/");
+    }
+  }, [authLoading, user, router]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -25,26 +45,58 @@ export default function RegisterForm() {
     }
 
     setError("");
-    const payload = {
-      email: email,
-      password: password,
-    }
-    const response = await fetch(apiUrl("/users/register"), {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+    setSubmitting(true);
+    const payload = { email, password };
 
-    if (response.ok) {
-      await response.json();
-      router.push("/login");
-    } else {
-      const data = await response.json();
-      setError(data.error);
+    try {
+      const response = await fetch(apiUrl("/users/register"), {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      let data = {};
+      try {
+        data = await response.json();
+      } catch {
+        /* non-JSON body */
+      }
+
+      if (response.ok) {
+        router.push("/login");
+        return;
+      }
+
+      setError(
+        formatApiError(data) ||
+          `Registration failed (${response.status}). Check the API URL and CORS settings.`
+      );
+    } catch (e) {
+      const message =
+        e instanceof TypeError
+          ? "Network error — could not reach the API. Confirm NEXT_PUBLIC_API_URL and that the server allows your site origin (CORS)."
+          : "Something went wrong. Please try again.";
+      setError(message);
+    } finally {
+      setSubmitting(false);
     }
+  }
+
+  if (authLoading) {
+    return (
+      <p className="text-center text-sm text-slate-500" aria-busy="true">
+        Loading…
+      </p>
+    );
+  }
+
+  if (user) {
+    return (
+      <p className="text-center text-sm text-slate-500">Redirecting…</p>
+    );
   }
 
   return (
@@ -98,9 +150,10 @@ export default function RegisterForm() {
 
       <button
         type="submit"
-        className="w-full rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+        disabled={submitting}
+        className="w-full rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        Register
+        {submitting ? "Creating account…" : "Register"}
       </button>
     </form>
   );

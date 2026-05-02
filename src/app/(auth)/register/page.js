@@ -1,16 +1,7 @@
-import { cookies } from "next/headers";
 import Navbar from "@/components/navbar";
 import RegisterForm from "@/components/register-form";
-import { redirect } from "next/navigation";
 
-export default async function RegisterPage() {
-  const cookieStore = await cookies();
-   const isAuthenticated = cookieStore.get("token") !== undefined;
-
-  if (isAuthenticated) {
-    redirect("/");
-  }
-
+export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-gray-50">
   

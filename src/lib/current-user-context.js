@@ -11,12 +11,10 @@ import {
 import { apiFetch } from "@/lib/apiFetch";
 import { apiUrl } from "@/lib/api-base";
 
-const ME_URL = apiUrl("/users/me");
-
 const CurrentUserContext = createContext(null);
 
 async function fetchMe() {
-  const res = await apiFetch(ME_URL, {
+  const res = await apiFetch(apiUrl("/users/me"), {
     credentials: "include",
   });
   if (res.ok) {

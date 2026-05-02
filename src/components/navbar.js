@@ -6,14 +6,18 @@ import { apiUrl } from "@/lib/api-base";
 
 export default function Navbar() {
   const router = useRouter();
-  const { user, loading, clearUser } = useCurrentUser();
+  const { user, loading, refreshUser } = useCurrentUser();
 
   async function handleLogout() {
-    await fetch(apiUrl("/users/logout"), {
-      method: "POST",
-      credentials: "include",
-    });
-    clearUser();
+    try {
+      await fetch(apiUrl("/users/logout"), {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {
+      // still sync session below
+    }
+    await refreshUser();
     router.push("/login");
     router.refresh();
   }
