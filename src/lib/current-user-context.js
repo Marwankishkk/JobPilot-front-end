@@ -9,8 +9,9 @@ import {
   useState,
 } from "react";
 import { apiFetch } from "@/lib/apiFetch";
+import { apiUrl } from "@/lib/api-base";
 
-const ME_URL = "http://localhost:8000/users/me";
+const ME_URL = apiUrl("/users/me");
 
 const CurrentUserContext = createContext(null);
 

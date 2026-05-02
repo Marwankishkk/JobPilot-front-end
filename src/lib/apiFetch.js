@@ -1,3 +1,5 @@
+import { apiUrl } from "@/lib/api-base";
+
 export async function apiFetch(url, options = {}) {
     let res = await fetch(url, {
       ...options,
@@ -7,7 +9,7 @@ export async function apiFetch(url, options = {}) {
     // access token expired
     if (res.status === 401) {
       const refreshRes = await fetch(
-        "http://localhost:8000/users/refresh",
+        apiUrl("/users/refresh"),
         {
           method: "POST",
           credentials: "include",
