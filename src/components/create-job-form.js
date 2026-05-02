@@ -18,7 +18,211 @@ export default function CreateJobForm() {
   const [appliedDate, setAppliedDate] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+"use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/apiFetch";
+import { apiUrl } from "@/lib/api-base";
+
+const inputClass =
+  "mt-1 w-full rounded-md border border-slate-300 bg-white p-2.5 text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30";
+
+function formatApiError(data) {
+  if (!data || typeof data !== "object") return null;
+
+  if (typeof data.detail === "string") return data.detail;
+
+  if (Array.isArray(data.detail)) {
+    return data.detail
+      .map((d) => (typeof d === "object" && d?.msg ? d.msg : String(d)))
+      .join(" ");
+  }
+
+  if (typeof data.error === "string") return data.error;
+  if (typeof data.message === "string") return data.message;
+
+  return null;
+}
+
+export default function CreateJobForm() {
+  const router = useRouter();
+
+  const [title, setTitle] = useState("");
+  const [company, setCompany] = useState("");
+  const [description, setDescription] = useState("");
+  const [location, setLocation] = useState("");
+  const [status, setStatus] = useState("applied");
+  const [appliedDate, setAppliedDate] = useState("");
+
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    setError("");
+    setSubmitting(true);
+
+    const payload = {
+      title: title.trim(),
+      company: company.trim(),
+      location: location.trim(),
+      status,
+      description: description.trim() || null,
+      applied_date: appliedDate || null,
+    };
+
+    try {
+      const response = await apiFetch(apiUrl("/jobs"), {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      let data = null;
+
+      const contentType = response.headers.get("content-type");
+      if (contentType?.includes("application/json")) {
+        try {
+          data = await response.json();
+        } catch {}
+      }
+
+      if (response.ok) {
+        router.push("/jobs");
+        return;
+      }
+
+      const errorMessage =
+        formatApiError(data) ||
+        data?.detail ||
+        "Could not create job.";
+
+      setError(errorMessage);
+
+    } catch (err) {
+      setError(
+        err instanceof TypeError
+          ? "Network error — cannot reach server. Check API URL and CORS."
+          : "Unexpected error occurred."
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <form className="space-y-4" onSubmit={handleSubmit}>
+      {/* Title */}
+      <div>
+        <label className="block text-sm font-medium text-slate-700">
+          Job Title
+        </label>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className={inputClass}
+          required
+        />
+      </div>
+
+      {/* Company */}
+      <div>
+        <label className="block text-sm font-medium text-slate-700">
+          Company
+        </label>
+        <input
+          type="text"
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
+          className={inputClass}
+          required
+        />
+      </div>
+
+      {/* Description */}
+      <div>
+        <label className="block text-sm font-medium text-slate-700">
+          Job Description
+          <span className="font-normal text-slate-500">
+            {" "}(optional, max 1000)
+          </span>
+        </label>
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          rows={4}
+          maxLength={1000}
+          className={inputClass}
+        />
+      </div>
+
+      {/* Location */}
+      <div>
+        <label className="block text-sm font-medium text-slate-700">
+          Location
+        </label>
+        <input
+          type="text"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          className={inputClass}
+          required
+        />
+      </div>
+
+      {/* Status */}
+      <div>
+        <label className="block text-sm font-medium text-slate-700">
+          Status
+        </label>
+        <select
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+          className={inputClass}
+        >
+          <option value="applied">Applied</option>
+          <option value="interviewing">Interviewing</option>
+          <option value="offered">Offered</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+
+      {/* Date */}
+      <div>
+        <label className="block text-sm font-medium text-slate-700">
+          Applied Date
+          <span className="font-normal text-slate-500"> (optional)</span>
+        </label>
+        <input
+          type="date"
+          value={appliedDate}
+          onChange={(e) => setAppliedDate(e.target.value)}
+          className={inputClass}
+        />
+      </div>
+
+      {/* Error */}
+      {error && (
+        <p className="text-sm text-rose-600">{error}</p>
+      )}
+
+      {/* Submit */}
+      <button
+        type="submit"
+        disabled={submitting}
+        className="w-full rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 disabled:opacity-60"
+      >
+        {submitting ? "Creating…" : "Create Job"}
+      </button>
+    </form>
+  );
+}
   async function handleSubmit(event) {
     event.preventDefault();
     setError("");
