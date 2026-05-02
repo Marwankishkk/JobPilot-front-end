@@ -38,8 +38,8 @@ export default function HomeHeroActions() {
       <a href="/register" className={primaryBtn}>
         Get Started
       </a>
-      <a href="/dashboard" className={secondaryBtn}>
-        Open Dashboard
+      <a href="/login" className={secondaryBtn}>
+        Sign in
       </a>
     </div>
   );
