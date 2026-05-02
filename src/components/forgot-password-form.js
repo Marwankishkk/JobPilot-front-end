@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { apiUrl } from "@/lib/api-base";
 
 const inputClass =
   "mt-1 w-full rounded-md border border-slate-300 bg-white p-2.5 text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30";
@@ -27,7 +28,7 @@ export default function ForgotPasswordForm() {
 
     try {
       const response = await fetch(
-        "http://localhost:8000/users/forgot-password",
+        apiUrl("/users/forgot-password"),
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
