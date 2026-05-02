@@ -53,7 +53,7 @@ export default function Home() {
           type="submit"
           className="w-full rounded-md bg-blue-600 py-2 text-white font-medium hover:bg-blue-700"
         >
-          Register
+          aaaaaa
         </button>
 
       </form>

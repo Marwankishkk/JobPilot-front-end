@@ -1,46 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { apiFetch } from "@/lib/apiFetch";
+import { useCurrentUser } from "@/lib/current-user-context";
+
 export default function Navbar() {
   const router = useRouter();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadUser() {
-      try {
-        const res = await apiFetch("http://localhost:8000/users/me", {
-          credentials: "include",
-        });
-        if (cancelled) return;
-        if (res.ok) {
-          setUser(await res.json());
-        } else {
-          setUser(null);
-        }
-      } catch {
-        if (!cancelled) setUser(null);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    loadUser();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const { user, loading, clearUser } = useCurrentUser();
 
   async function handleLogout() {
     await fetch("http://localhost:8000/users/logout", {
       method: "POST",
       credentials: "include",
     });
-    setUser(null);
+    clearUser();
     router.push("/login");
     router.refresh();
   }
@@ -69,11 +41,7 @@ export default function Navbar() {
                   Jobs
                 </a>
               </li>
-              <li>
-                <a href="/dashboard" className={linkClass}>
-                  Dashboard
-                </a>
-              </li>
+             
               <li>
                 <button
                   type="button"

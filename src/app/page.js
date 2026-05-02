@@ -1,4 +1,5 @@
 import Navbar from "@/components/navbar";
+import HomeHeroActions from "@/components/home-hero-actions";
 
 export default function Home() {
   return (
@@ -25,24 +26,7 @@ export default function Home() {
           Keep your job hunt organized in one place. Save applications, monitor statuses, and stay focused on your next opportunity.
         </p>
   
-        {/* Buttons */}
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-  
-          <a
-            href="/register"
-            className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-          >
-            Get Started
-          </a>
-
-          <a
-            href="/dashboard"
-            className="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition-colors hover:bg-slate-50 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
-          >
-            Open Dashboard
-          </a>
-  
-        </div>
+        <HomeHeroActions />
   
       </div>
   

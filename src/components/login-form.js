@@ -3,9 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useCurrentUser } from "@/lib/current-user-context";
 
 export default function LoginForm() {
   const router = useRouter();
+  const { refreshUser } = useCurrentUser();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,9 +33,7 @@ export default function LoginForm() {
     const data = await response.json();
 
     if (response.ok) {
-      console.log("Login success:", data);
-
-      // cookies now stored automatically
+      await refreshUser();
       router.push("/");
     } else {
       setError(data.detail || "Login failed");
