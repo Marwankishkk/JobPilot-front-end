@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCurrentUser } from "@/lib/current-user-context";
+import { apiUrl } from "@/lib/api-base";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -18,7 +19,7 @@ export default function LoginForm() {
 
     setError("");
 
-    const response = await fetch("http://localhost:8000/users/login", {
+    const response = await fetch(apiUrl("/users/login"), {
       method: "POST",
       credentials: "include", 
       headers: {

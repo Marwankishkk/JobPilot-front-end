@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/apiFetch";
+import { apiUrl } from "@/lib/api-base";
 
-const JOBS_URL = "http://localhost:8000/jobs/";
+const JOBS_URL = apiUrl("/jobs/");
 
 const STATUS_OPTIONS = [
   { value: "applied", label: "Applied" },

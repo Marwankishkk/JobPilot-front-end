@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/apiFetch";
+import { apiUrl } from "@/lib/api-base";
 
 const inputClass =
   "mt-1 w-full rounded-md border border-slate-300 bg-white p-2.5 text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30";
@@ -35,7 +36,7 @@ export default function CreateJobForm() {
     };
 
     try {
-      const response = await apiFetch("http://localhost:8000/jobs", {
+      const response = await apiFetch(apiUrl("/jobs"), {
         method: "POST",
         credentials: "include",
         headers: {

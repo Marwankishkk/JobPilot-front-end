@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { apiUrl } from "@/lib/api-base";
 
 export default function VerifyPage() {
   const params = useSearchParams();
@@ -18,7 +19,7 @@ export default function VerifyPage() {
     async function verify() {
       try {
         const res = await fetch(
-          `http://localhost:8000/users/verify?token=${encodeURIComponent(token)}`,
+          `${apiUrl("/users/verify")}?token=${encodeURIComponent(token)}`,
           { credentials: "include" }
         );
 

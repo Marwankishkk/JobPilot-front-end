@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { apiUrl } from "@/lib/api-base";
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const params = useSearchParams();
   const router = useRouter();
 
@@ -31,7 +32,7 @@ export default function ResetPasswordPage() {
 
     try {
       const response = await fetch(
-        "http://localhost:8000/users/reset-password",
+        apiUrl("/users/reset-password"),
         {
           method: "POST",
           headers: {
@@ -110,5 +111,19 @@ export default function ResetPasswordPage() {
         </button>
       </form>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center text-slate-600">
+          Loading…
+        </div>
+      }
+    >
+      <ResetPasswordForm />
+    </Suspense>
   );
 }

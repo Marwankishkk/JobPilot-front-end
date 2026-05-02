@@ -12,7 +12,7 @@ Next.js app for JobPilot: authentication flows, job listing, and creating jobs. 
 ## Prerequisites
 
 - Node.js (LTS recommended)
-- Backend running and reachable (the app currently expects the API at `http://localhost:8000`; see `src/lib/apiFetch.js` and `src/lib/current-user-context.js`)
+- Backend running and reachable. By default the app uses `http://localhost:8000`. Override with `NEXT_PUBLIC_API_URL` (see `src/lib/api-base.js`). Production builds read `.env.production`.
 
 ## Setup
 
@@ -44,7 +44,7 @@ Shared UI includes the navbar, forms, and a `CurrentUserProvider` for session-aw
 
 - **`next.config.mjs`** — Next.js config (e.g. React Compiler enabled)
 
-To point the frontend at a different API host or port, update the fetch URLs in `src/lib/apiFetch.js`, `src/lib/current-user-context.js`, and any components that call the API directly.
+Set `NEXT_PUBLIC_API_URL` (no trailing slash), for example in `.env.local` for development or `.env.production` for releases. All API calls go through `apiUrl()` from `src/lib/api-base.js`.
 
 ## Deploy
 

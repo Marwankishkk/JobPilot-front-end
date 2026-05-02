@@ -2,13 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import { useCurrentUser } from "@/lib/current-user-context";
+import { apiUrl } from "@/lib/api-base";
 
 export default function Navbar() {
   const router = useRouter();
   const { user, loading, clearUser } = useCurrentUser();
 
   async function handleLogout() {
-    await fetch("http://localhost:8000/users/logout", {
+    await fetch(apiUrl("/users/logout"), {
       method: "POST",
       credentials: "include",
     });
