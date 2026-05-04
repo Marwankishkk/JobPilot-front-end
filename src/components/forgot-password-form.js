@@ -17,39 +17,63 @@ function formatDetail(detail) {
 
 export default function ForgotPasswordForm() {
   const [username, setUsername] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const [sent, setSent] = useState(false);
+  const [infoMessage, setInfoMessage] = useState("");
+  const [passwordReset, setPasswordReset] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  const passwordsMatch = newPassword === confirmPassword;
 
   async function handleSubmit(event) {
     event.preventDefault();
     setError("");
+    setInfoMessage("");
+    setPasswordReset(false);
+
+    if (newPassword !== confirmPassword) {
+      setError("New password and confirmation must match.");
+      return;
+    }
+
     setSubmitting(true);
 
     try {
-      const response = await fetch(
-        apiUrl("/users/forgot-password"),
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username }),
-        }
-      );
+      const response = await fetch(apiUrl("/users/forgot-password"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username,
+          new_password: newPassword,
+        }),
+      });
 
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        setError(formatDetail(data.detail) || "Request failed");
+        setError(
+          formatDetail(data.detail) || data.message || "Request failed"
+        );
         return;
       }
 
-      setSent(true);
+      const msg =
+        typeof data.message === "string" ? data.message : "";
+      setInfoMessage(msg);
+
+      const reset =
+        msg.toLowerCase().includes("password reset") ||
+        msg.toLowerCase().includes("password has been reset");
+      setPasswordReset(reset);
     } catch {
       setError("Network error. Please try again.");
     } finally {
       setSubmitting(false);
     }
   }
+
+  const formLocked = passwordReset;
 
   return (
     <div className="space-y-4">
@@ -66,31 +90,84 @@ export default function ForgotPasswordForm() {
             className={inputClass}
             placeholder="Your username"
             required
-            disabled={sent}
+            disabled={formLocked}
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700">
+            New password
+          </label>
+          <input
+            type="password"
+            autoComplete="new-password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            className={inputClass}
+            placeholder="••••••••"
+            required
+            disabled={formLocked}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700">
+            Confirm new password
+          </label>
+          <input
+            type="password"
+            autoComplete="new-password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className={`${inputClass} ${
+              confirmPassword && !passwordsMatch
+                ? "border-rose-500 focus:border-rose-500 focus:ring-rose-500/30"
+                : ""
+            }`}
+            placeholder="••••••••"
+            required
+            disabled={formLocked}
+          />
+          {confirmPassword && !passwordsMatch && (
+            <p className="mt-1 text-sm text-rose-600">
+              Passwords do not match.
+            </p>
+          )}
         </div>
 
         {error && (
           <p className="text-sm font-medium text-rose-600">{error}</p>
         )}
 
-        {sent && (
-          <p className="text-sm text-slate-600">
-            If an account exists for that username, you will receive a link to
-            reset your password.
+        {infoMessage && (
+          <p
+            className={`text-sm ${
+              passwordReset ? "font-medium text-emerald-700" : "text-slate-600"
+            }`}
+          >
+            {infoMessage}
+          </p>
+        )}
+
+        {passwordReset && (
+          <p>
+            <Link
+              href="/login"
+              className="text-sm font-medium text-blue-600 hover:text-blue-500"
+            >
+              Go to login
+            </Link>
           </p>
         )}
 
         <button
           type="submit"
-          disabled={sent || submitting}
+          disabled={formLocked || submitting || !passwordsMatch}
           className="w-full rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-60"
         >
-          {submitting ? "Sending…" : sent ? "Link sent" : "Send reset link"}
+          {submitting ? "Updating…" : formLocked ? "Done" : "Reset password"}
         </button>
       </form>
-
-     
     </div>
   );
 }

@@ -9,7 +9,7 @@ export default function ForgotPasswordPage() {
       <div className="flex items-center justify-center py-10">
         <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-md">
           <h1 className="mb-6 text-center text-2xl font-bold tracking-tight text-slate-900">
-            Forgot password
+            Reset password
           </h1>
 
           <ForgotPasswordForm />
