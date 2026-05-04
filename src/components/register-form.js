@@ -29,7 +29,7 @@ export default function RegisterForm() {
   const router = useRouter();
   const { user, loading: authLoading } = useCurrentUser();
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -55,7 +55,7 @@ export default function RegisterForm() {
     setError("");
     setSubmitting(true);
 
-    const payload = { email, password };
+    const payload = { username, password };
 
     try {
       const response = await fetch(apiUrl("/users/register"), {
@@ -116,20 +116,21 @@ export default function RegisterForm() {
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
-      {/* Email */}
+      {/* Username */}
       <div>
         <label className="block text-sm font-medium text-slate-700">
-          Email
+          Username
         </label>
         <input
-          type="email"
-          value={email}
+          type="text"
+          autoComplete="username"
+          value={username}
           onChange={(e) => {
-            setEmail(e.target.value);
+            setUsername(e.target.value);
             if (error) setError("");
           }}
           className={inputClass}
-          placeholder="you@example.com"
+          placeholder="Choose a username"
           required
         />
       </div>

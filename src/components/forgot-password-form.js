@@ -16,7 +16,7 @@ function formatDetail(detail) {
 }
 
 export default function ForgotPasswordForm() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -32,7 +32,7 @@ export default function ForgotPasswordForm() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
+          body: JSON.stringify({ username }),
         }
       );
 
@@ -56,14 +56,15 @@ export default function ForgotPasswordForm() {
       <form className="space-y-4" onSubmit={handleSubmit}>
         <div>
           <label className="block text-sm font-medium text-slate-700">
-            Email
+            Username
           </label>
           <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            autoComplete="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             className={inputClass}
-            placeholder="you@example.com"
+            placeholder="Your username"
             required
             disabled={sent}
           />
@@ -75,7 +76,7 @@ export default function ForgotPasswordForm() {
 
         {sent && (
           <p className="text-sm text-slate-600">
-            If an account exists for that email, you will receive a link to
+            If an account exists for that username, you will receive a link to
             reset your password.
           </p>
         )}
@@ -85,7 +86,7 @@ export default function ForgotPasswordForm() {
           disabled={sent || submitting}
           className="w-full rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-60"
         >
-          {submitting ? "Sending…" : sent ? "Email sent" : "Send reset link"}
+          {submitting ? "Sending…" : sent ? "Link sent" : "Send reset link"}
         </button>
       </form>
 

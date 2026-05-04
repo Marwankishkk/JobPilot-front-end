@@ -15,13 +15,13 @@ export default function Home() {
 
       <form className="space-y-4">
 
-        {/* Email */}
+        {/* Username */}
         <div>
           <label className="block text-sm font-medium text-slate-700">
-            Email
+            Username
           </label>
           <input
-            type="email"
+            type="text"
             className="mt-1 w-full rounded-md border border-slate-300 p-2 focus:border-blue-500 focus:ring-blue-500"
           />
         </div>

@@ -10,7 +10,7 @@ export default function LoginForm() {
   const router = useRouter();
   const { refreshUser } = useCurrentUser();
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
@@ -26,7 +26,7 @@ export default function LoginForm() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        email,
+        username,
         password,
       }),
     });
@@ -44,17 +44,18 @@ export default function LoginForm() {
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
       
-      {/* Email */}
+      {/* Username */}
       <div>
         <label className="block text-sm font-medium text-slate-700">
-          Email
+          Username
         </label>
         <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          autoComplete="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           className="mt-1 w-full rounded-md border border-slate-300 bg-white p-2.5 text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-          placeholder="you@example.com"
+          placeholder="Your username"
           required
         />
       </div>
